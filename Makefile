@@ -31,4 +31,4 @@ final	:	NHfinal_smooth.dat SHfinal_smooth.dat
 nrt	:	SHnrt_smooth.dat NHnrt_smooth.dat
 
 yearplot	:	SHnrt_smooth.dat NHnrt_smooth.dat
-	Rscript handleNHice.r
+	Rscript plotNSIDCannualCycle.r
