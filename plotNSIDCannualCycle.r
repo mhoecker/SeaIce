@@ -1,4 +1,3 @@
-source('handleice.r')
 # set plot size
 pngsize	<-list(width=1536,height=1024)
 # Set colors and plot tics
@@ -27,9 +26,6 @@ myMonth$String	<- strftime(myMonth$date,format="%b %d")
 myMonth$JdayString	<- strftime(myMonth$date,format="%j")
 myMonth$Jdays	<- as.numeric(myMonth$JdayString)
 xtics	<-	list(at=myMonth$Jdays,label=myMonth$String)
-# Set the extent of smoothing
-Nspan	<- 3
-probs	<-	c(.125,.25,.75,.875)
 # Plot ice summary
 plotice	<-	function(
 	ice,
@@ -44,10 +40,10 @@ plotice	<-	function(
 	probs=c(NA,NA,NA,NA)
 		){
 histpch	<-	1
-histcex	<-	.2
-Extentlab	<-	paste(icename," Extent (10^6 km^2)")
-dExtentlab	<-	paste("Rate of Change in",icename,"(10^6 km^2 / day)")
-par(mfrow=c(2,1))
+histcex	<-	.1
+Extentlab	<-	paste(icename,"Extent (10^6 km^2)")
+dExtentlab	<-	paste(icename,"Change","(10^6 km^2 / day)")
+par(mfrow=c(2,1),cex=1.5)
 #Upper plot of Rate
 plot(
 	icemeans[,c("Jday","dExtent")],
@@ -56,7 +52,8 @@ plot(
 	xlab="Day of the year",
 	xlim=c(1,366),
 	ylab=dExtentlab,
-	ylim=range(pretty(ice$dExtent))
+	ylim=range(pretty(ice$dExtent)),
+	col="white"
 	)
 	if(!is.na(Nspan)){title(sprintf("Rate of change calculated over %i days",2*Nspan+1))}
 axis(1,
@@ -73,7 +70,7 @@ polygon(c(icemeans$Jday, rev(icemeans$Jday)),
 	col = "grey60",
 	border = NA)
 # Plot median
-lines(icemeans[,c("Jday","dExtent")],col="white",lw=4)
+lines(icemeans[,c("Jday","dExtent")],col="white",lw=3)
 # Plot historical values
 points(ice[,c("JJJ","dExtent")],col=ice$color,pch=histpch,cex=histcex)
 lines(icenow[,c("JJJ","dExtent")],col="blue",lw=2)
@@ -123,7 +120,8 @@ plot(
 	xlab="Day of the year",
 	xlim=c(1,366),
 	ylab=Extentlab,
-	ylim=range(pretty(ice$Extent))
+	ylim=range(pretty(ice$Extent)),
+	col="white"
 	)
 title(sprintf("Smoothed over %i days",2*Nspan+1))
 axis(1,
@@ -139,7 +137,7 @@ polygon(c(icemeans$Jday, rev(icemeans$Jday)),
 	c(icemeans$Extent3, rev(icemeans$Extent2)),
 	col = "grey60",
 	border = NA)
-lines(icemeans[,c("Jday","Extent")],col="white",lw=4)
+lines(icemeans[,c("Jday","Extent")],col="white",lw=3)
 points(ice[,c("JJJ","medianExtent")],col=ice$color,pch=histpch,cex=histcex)
 lines(icenow[,c("JJJ","medianExtent")],col="blue",lw=2)
 lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
@@ -154,21 +152,23 @@ ploticeanomaly	<-	function(
 		list(at=c(1,3),
 		label=c("Jan 1","Dec 31")),
 	probs=c(NA,NA,NA,NA)){
-Extentlab	<-	paste(icename," Extent Anomaly (10^6 km^2)")
-dExtentlab	<-	paste("Anomolous Rate of Change in",icename,"(10^6 km^2 / day)")
-par(mfrow=c(2,1))
+Extentlab	<-	paste(icename,"Extent Anomaly (10^6 km^2)")
+dExtentlab	<-	paste(icename,"Change Anomoly (10^6 km^2 / day)")
+par(mfrow=c(2,1),cex=1.5)
 histpch	<-	1
-histcex	<-	.2
+histcex	<-	.1
 #Upper plot of Rate
 dExtentlims	<-	range(pretty(c(ice$dExtentA,icenow$dExtentA)))
-plot(
-	x=0,
-	y=0,
-	axes=F,
-	xlab="Day of the year",
-	xlim=c(1,366),
-	ylab=dExtentlab,
-	ylim=dExtentlims)
+	plot(
+		x=0,
+		y=0,
+		axes=F,
+		xlab="Day of the year",
+		xlim=c(1,366),
+		ylab=dExtentlab,
+		ylim=dExtentlims,
+		col="white"
+		)
 	if(!is.na(Nspan)){title(sprintf("Rate of change calculated over %i days",2*Nspan+1))}
 axis(1,
 	at=xtics$at,
