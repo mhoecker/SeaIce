@@ -26,67 +26,27 @@ load.ice	<-	function(
 		load(file=file)
 		return(ice)
 }
-#Read final ice extent into R data files
-ingest.final	<-	function(finalfile,
+#Read ice extent into R data files
+ingest.ice	<-	function(iceCSVfile,
 	outname,
 	Nspan=NA,
 	probs=NA
 	){
-	final	<-	read.ice(finalfile)
+	ice	<-	read.ice(iceCSVfile)
 	#
-	final_mean	<-	meanice(final,probs=probs)
-	save.ice(final_mean,file=paste(outname,"mean.dat",sep=""))
+	ice_mean	<-	meanice(ice,probs=probs)
+	save.ice(ice_mean,file=paste(outname,"mean.dat",sep=""))
 	#
-	final	<-	addanomaly(final,final_mean)
-	save.ice(final,file=paste(outname,"final.dat",sep=""))
+	ice	<-	addanomaly(ice,ice_mean)
+	save.ice(ice,file=paste(outname,".dat",sep=""))
 	#
-	final_smooth	<-	smoothice(final,Nspan=Nspan)
+	ice_smooth	<-	smoothice(ice,Nspan=Nspan)
 	#
-	final_smooth_mean	<-	meanice(final_smooth,probs=probs)
-	save.ice(final_smooth_mean,file=paste(outname,"smooth_mean.dat",sep=""))
+	ice_smooth_mean	<-	meanice(ice_smooth,probs=probs)
+	save.ice(ice_smooth_mean,file=paste(outname,"smooth_mean.dat",sep=""))
 	#
-	final_smooth	<-	addanomaly(final_smooth,final_smooth_mean)
-	save.ice(final_smooth,file=paste(outname,"final_smooth.dat",sep=""))
-}
-ingest.nrt	<- function(nrtfile,
-	outname,
-	Nspan=NA,
-	probs=NA,
-	loadfinal=T
-	){
-	#
-	nrt	<-	read.ice(nrtfile)
-	nrt_smooth	<-	smoothice(nrt,Nspan=Nspan)
-	# load and incorporate statistics from final data set
-	if(loadfinal){
-		final_mean	<-	load.ice(paste(outname,"mean.dat",sep="")) 
-		final_smooth_mean	<-	load.ice(paste(outname,"smooth_mean.dat",sep=""))
-		ls()
-		nrt	<-	addanomaly(nrt,final_mean)
-		nrt_smooth	<-	addanomaly(nrt_smooth,final_smooth_mean)
-	}
-	#
-	save.ice(nrt,file=paste(outname,"nrt.dat",sep=""))
-	save.ice(nrt_smooth,file=paste(outname,"nrt_smooth.dat",sep=""))
-}
-ingest.ice	<-	function(
-	finalfile,
-	nrtfile,
-	outname,
-	Nsapn=NA,
-	probs=NA
-	){
-	# do the final file
-	ingest.final(finalfile=finalfile,
-	outname=outname,
-	Nspan=Nspan,
-	probs=probs)
-	# do the nrt file
-	ingest.nrt(nrtfile=nrtfile,
-	outname=outname,
-	Nspan=Nspan,
-	probs=probs
-	)
+	ice_smooth	<-	addanomaly(ice_smooth,ice_smooth_mean)
+	save.ice(ice_smooth,file=paste(outname,"smooth.dat",sep=""))
 }
 #Smooth ice data by fitting a local linear regression
 smoothice	<-	function(
@@ -104,10 +64,17 @@ smoothice	<-	function(
 		weights	<-	weights/Nspan
 		weights	<-	sqrt(weights)
 		weights	<-	1-weights
-		fitmodel <-	lm(
-			formula= y ~ poly(x,1,raw=T),
-			weights=weights,
-			data=subdata)
+		if(Nspan>42){
+			fitmodel <-	lm(
+				formula= y ~ poly(x,2,raw=T),
+				weights=weights,
+				data=subdata)
+		}else{
+			fitmodel <-	lm(
+				formula= y ~ poly(x,1,raw=T),
+				weights=weights,
+				data=subdata)
+		}
 		ice$dExtent[i] <- fitmodel$coefficients[2]
 		ice$medianExtent[i] <- fitmodel$coefficients[1]
 	}

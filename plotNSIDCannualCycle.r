@@ -2,9 +2,10 @@
 pngsize	<-list(width=1536,height=1024)
 # Set colors and plot tics
 rkpal	<-	colorRampPalette(c(
-	rgb(0,0,0,.5),
-	rgb(1,0,0,.5),
-	rgb(1,1,0,.5)))
+	rgb(0.1,0.1,.7),
+	rgb(1,1,.4),
+	rgb(.7,.1,.1))
+	)
 # Dates marking midpoints of months and start and end of year
 myMonth	<- data.frame(date=as.Date(c(
 	"2016-01-01",
@@ -29,7 +30,6 @@ xtics	<-	list(at=myMonth$Jdays,label=myMonth$String)
 # Plot ice summary
 plotice	<-	function(
 	ice,
-	icenow,
 	icemeans,
 	icename="",
 	Nspan=NA,
@@ -41,6 +41,7 @@ plotice	<-	function(
 		){
 histpch	<-	1
 histcex	<-	.1
+histlw	<-	1
 Extentlab	<-	paste(icename,"Extent (10^6 km^2)")
 dExtentlab	<-	paste(icename,"Change","(10^6 km^2 / day)")
 par(mfrow=c(2,1),cex=1.5)
@@ -69,36 +70,40 @@ polygon(c(icemeans$Jday, rev(icemeans$Jday)),
 	c(icemeans$dExtent3, rev(icemeans$dExtent2)),
 	col = "grey60",
 	border = NA)
-# Plot median
-lines(icemeans[,c("Jday","dExtent")],col="white",lw=3)
 # Plot historical values
-points(ice[,c("JJJ","dExtent")],col=ice$color,pch=histpch,cex=histcex)
-lines(icenow[,c("JJJ","dExtent")],col="blue",lw=2)
+for(yr in unique(ice$Year)){
+	if(yr==max(ice$Year)){
+		lines(ice[ice$Year==yr,c("JJJ","dExtent")],col=ice$color[ice$Year==yr],lw=3*histlw)
+	}else{
+		lines(ice[ice$Year==yr,c("JJJ","dExtent")],col=ice$color[ice$Year==yr],lw=histlw)
+	}
+}
+# Plot median
+lines(icemeans[,c("Jday","dExtent1")],col="grey80",lw=2)
+lines(icemeans[,c("Jday","dExtent4")],col="grey80",lw=2)
+lines(icemeans[,c("Jday","dExtent2")],col="grey60",lw=3)
+lines(icemeans[,c("Jday","dExtent3")],col="grey60",lw=3)
+lines(icemeans[,c("Jday","dExtent")],col="white",lw=4)
+lines(ice[ice$Year==max(ice$Year),c("JJJ","dExtent")],col=ice$color[ice$Year==max(ice$Year)],lw=histlw)
 lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
 legend("bottom",
 	bty="n",
-	ncol=3,
+	ncol=2,
 	border=c(
 		rkpal(3)[[1]],
 		rkpal(3)[[2]],
 		rkpal(3)[[3]],
 		"black",
 		"grey80",
-		"grey60",
-		"blue",
-		"white",
-		"white"
+		"grey60"
 		),
 	fill=c(
-		ice$color[ice$Year==min(ice$Year)][1],
-		ice$color[ice$Year==median(ice$Year)][1],
-		ice$color[ice$Year==max(ice$Year)][1],
+		rkpal(3)[[1]],
+		rkpal(3)[[2]],
+		rkpal(3)[[3]],
 		"white",
 		"grey80",
-		"grey60",
-		"blue",
-		"white",
-		"white"
+		"grey60"
 		),
 	legend=c(
 		min(ice$Year,na.rm=T),
@@ -106,10 +111,7 @@ legend("bottom",
 		max(ice$Year,na.rm=T),
 		"median",
 		paste(probs[1]*100,"%-",100*probs[4],"%",sep=""),
-		paste(probs[2]*100,"%-",100*probs[3],"%",sep=""),
-		icenow$Year[1],
-		"",
-		""
+		paste(probs[2]*100,"%-",100*probs[3],"%",sep="")
 		)
 	)
 # Lower Plot of Extent
@@ -137,14 +139,24 @@ polygon(c(icemeans$Jday, rev(icemeans$Jday)),
 	c(icemeans$Extent3, rev(icemeans$Extent2)),
 	col = "grey60",
 	border = NA)
-lines(icemeans[,c("Jday","Extent")],col="white",lw=3)
-points(ice[,c("JJJ","medianExtent")],col=ice$color,pch=histpch,cex=histcex)
-lines(icenow[,c("JJJ","medianExtent")],col="blue",lw=2)
+for(yr in unique(ice$Year)){
+	if(yr==max(ice$Year)){
+		lines(ice[ice$Year==yr,c("JJJ","medianExtent")],col=ice$color[ice$Year==yr],lw=3*histlw)
+	}else{
+		lines(ice[ice$Year==yr,c("JJJ","medianExtent")],col=ice$color[ice$Year==yr],lw=histlw)
+	}
+}
+#median
+lines(icemeans[,c("Jday","Extent1")],col="grey80",lw=2)
+lines(icemeans[,c("Jday","Extent4")],col="grey80",lw=2)
+lines(icemeans[,c("Jday","Extent2")],col="grey60",lw=3)
+lines(icemeans[,c("Jday","Extent3")],col="grey60",lw=3)
+lines(icemeans[,c("Jday","Extent")],col="white",lw=4)
 lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
+lines(ice[ice$Year==max(ice$Year),c("JJJ","medianExtent")],col=ice$color[ice$Year==max(ice$Year)],lw=histlw)
 }
 ploticeanomaly	<-	function(
 	ice,
-	icenow,
 	icemeans,
 	icename="",
 	Nspan=NA,
@@ -152,13 +164,14 @@ ploticeanomaly	<-	function(
 		list(at=c(1,3),
 		label=c("Jan 1","Dec 31")),
 	probs=c(NA,NA,NA,NA)){
-Extentlab	<-	paste(icename,"Extent Anomaly (10^6 km^2)")
-dExtentlab	<-	paste(icename,"Change Anomoly (10^6 km^2 / day)")
-par(mfrow=c(2,1),cex=1.5)
-histpch	<-	1
-histcex	<-	.1
-#Upper plot of Rate
-dExtentlims	<-	range(pretty(c(ice$dExtentA,icenow$dExtentA)))
+	Extentlab	<-	paste(icename,"Extent Anomaly (10^6 km^2)")
+	dExtentlab	<-	paste(icename,"Change Anomoly (10^6 km^2 / day)")
+	par(mfrow=c(2,1),cex=1.5)
+	histpch	<-	1
+	histcex	<-	.1
+	histlw	<-	1
+	#Upper plot of Rate
+	dExtentlims	<-	range(pretty(ice$dExtentA))
 	plot(
 		x=0,
 		y=0,
@@ -170,102 +183,167 @@ dExtentlims	<-	range(pretty(c(ice$dExtentA,icenow$dExtentA)))
 		col="white"
 		)
 	if(!is.na(Nspan)){title(sprintf("Rate of change calculated over %i days",2*Nspan+1))}
-axis(1,
-	at=xtics$at,
-	label=xtics$label)
-axis(2,
-	at=pretty(dExtentlims))
-polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-	c(icemeans$dExtent4A, rev(icemeans$dExtent1A)),
-	col = "grey80",
-	border = NA)
-polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-	c(icemeans$dExtent3A, rev(icemeans$dExtent2A)),
-	col = "grey60",
-	border = NA)
-points(ice[,c("JJJ","dExtentA")],col=ice$color,pch=histpch,cex=histcex)
-lines(icenow[,c("JJJ","dExtentA")],col="blue",lw=2)
-lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
-legend("bottom",
-	bty="n",
-	ncol=3,
-	border=c(
-		rkpal(3)[[1]],
-		rkpal(3)[[2]],
-		rkpal(3)[[3]],
-		"white",
-		"grey80",
-		"grey60",
-		"blue",
-		"white",
-		"white"
-		),
-	fill=c(
-		ice$color[ice$Year==min(ice$Year)][1],
-		ice$color[ice$Year==median(ice$Year)][1],
-		ice$color[ice$Year==max(ice$Year)][1],
-		"white",
-		"grey80",
-		"grey60",
-		"blue",
-		"white",
-		"white"
-		),
-	legend=c(
-		min(ice$Year,na.rm=T),
-		"to",
-		max(ice$Year,na.rm=T),
-		"",
-		paste(probs[1]*100,"%-",100*probs[4],"%",sep=""),
-		paste(probs[2]*100,"%-",100*probs[3],"%",sep=""),
-		icenow$Year[1],
-		"",
-		""
+	axis(1,
+		at=xtics$at,
+		label=xtics$label)
+	axis(2,
+		at=pretty(dExtentlims))
+	polygon(c(icemeans$Jday, rev(icemeans$Jday)),
+		c(icemeans$dExtent4A, rev(icemeans$dExtent1A)),
+		col = "grey80",
+		border = NA)
+	polygon(c(icemeans$Jday, rev(icemeans$Jday)),
+		c(icemeans$dExtent3A, rev(icemeans$dExtent2A)),
+		col = "grey60",
+		border = NA)
+	for(yr in unique(ice$Year)){
+		if(yr==max(ice$Year)){
+			lines(ice[ice$Year==yr,c("JJJ","dExtentA")],col=ice$color[ice$Year==yr],lw=3*histlw)
+		}else{
+			lines(ice[ice$Year==yr,c("JJJ","dExtentA")],col=ice$color[ice$Year==yr],lw=histlw)		
+		}
+	}
+	lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
+	legend("bottom",
+		bty="n",
+		ncol=2,
+		border=c(
+			rkpal(3)[[1]],
+			rkpal(3)[[2]],
+			rkpal(3)[[3]],
+			"white",
+			"grey80",
+			"grey60"
+			),
+		fill=c(
+			rkpal(3)[[1]],
+			rkpal(3)[[2]],
+			rkpal(3)[[3]],
+			"white",
+			"grey80",
+			"grey60"
+			),
+		legend=c(
+			min(ice$Year,na.rm=T),
+			"to",
+			max(ice$Year,na.rm=T),
+			"",
+			paste(probs[1]*100,"%-",100*probs[4],"%",sep=""),
+			paste(probs[2]*100,"%-",100*probs[3],"%",sep="")
+			)
 		)
-	)
-# Lower Plot of Extent
-Extentlims	<-	range(pretty(c(ice$ExtentA,icenow$ExtentA)))
-plot(
-	x=0,
-	y=0,
-	axes=F,
-	xlab="Day of the year",
-	xlim=c(1,366),
-	ylab=Extentlab,
-	ylim=Extentlims
-	)
-title(sprintf("Smoothed over %i days",2*Nspan+1))
-axis(1,
-	at=xtics$at,
-	label=xtics$label)
-axis(2,
-	at=pretty(Extentlims))
-polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-	c(icemeans$Extent4A, rev(icemeans$Extent1A)),
-	col = "grey80",
-	border = NA)
-polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-	c(icemeans$Extent3A, rev(icemeans$Extent2A)),
-	col = "grey60",
-	border = NA)
-points(ice[,c("JJJ","ExtentA")],col=ice$color,pch=histpch,cex=histcex)
-lines(icenow[,c("JJJ","ExtentA")],col="blue",lw=2)
-lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)	
+	# Lower Plot of Extent
+	Extentlims	<-	range(pretty(ice$ExtentA))
+	plot(
+		x=0,
+		y=0,
+		axes=F,
+		xlab="Day of the year",
+		xlim=c(1,366),
+		ylab=Extentlab,
+		ylim=Extentlims
+		)
+	title(sprintf("Smoothed over %i days",2*Nspan+1))
+	axis(1,
+		at=xtics$at,
+		label=xtics$label)
+	axis(2,
+		at=pretty(Extentlims))
+	polygon(c(icemeans$Jday, rev(icemeans$Jday)),
+		c(icemeans$Extent4A, rev(icemeans$Extent1A)),
+		col = "grey80",
+		border = NA)
+	polygon(c(icemeans$Jday, rev(icemeans$Jday)),
+		c(icemeans$Extent3A, rev(icemeans$Extent2A)),
+		col = "grey60",
+		border = NA)
+	for(yr in unique(ice$Year)){
+		if(yr==max(ice$Year)){
+			lines(ice[ice$Year==yr,c("JJJ","ExtentA")],col=ice$color[ice$Year==yr],lw=3*histlw)
+		}else{
+			lines(ice[ice$Year==yr,c("JJJ","ExtentA")],col=ice$color[ice$Year==yr],lw=histlw)
+		}
+	}
+	lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)	
 }
+# Plot anomaly by year
+plotanomalytrend	<-	function(
+	ice,
+	icemeans,
+	icename="",
+	Nspan=NA,
+	probs=c(NA,NA,NA,NA)){
+	#
+	xtics=
+		list(
+			at=pretty(range(ice$Year)),
+			label=pretty(range(ice$Year)),
+			range=range(ice$Year)
+			)
+	Extentlab	<-	paste(icename,"Extent Anomaly (10^6 km^2)")
+	Extentlims	<-	range(pretty(ice$ExtentA))
+	histpch	<-	16
+	histcex	<-	1
+	histlw	<-	1
+	par(cex=1.5)
+	plot(
+		x=0,
+		y=0,
+		axes=F,
+		xlab="Year",
+		xlim=xtics$range,
+		ylab=Extentlab,
+		ylim=Extentlims,
+		col="white"
+		)
+	if(!is.na(Nspan)){title(sprintf("Median Seasonal Cycle Removed\n Smoothed over %i days",2*Nspan+1))}
+	axis(1,
+		at=xtics$at)
+	axis(2,
+		at=pretty(Extentlims))
+	for(yr in unique(ice$Year)){
+		thisyr	<-	ice$Year==yr
+		x	<-	ice$JJJ[thisyr]
+		x	<-	ice$Year[thisyr]+(x-.5)/max(c(x,365))
+		xmean	<- yr+(icemeans$Jday-.5)/365
+		xmean	<-	c(xmean,rev(xmean))
+		polygon(x=xmean,y=c(icemeans$Extent1A,rev(icemeans$Extent4A)),col="grey80",border = NA)
+		polygon(x=xmean,y=c(icemeans$Extent2A,rev(icemeans$Extent3A)),col="grey60",border = NA)
+		lines(x=x,y=ice$ExtentA[thisyr],col=ice$color[thisyr],lw=histlw)
+	}
+	legend("bottom",
+		bty="n",
+		ncol=1,
+		border=c(
+			rkpal(3)[[1]],
+			rkpal(3)[[2]],
+			rkpal(3)[[3]]
+			),
+		fill=c(
+			rkpal(3)[[1]],
+			rkpal(3)[[2]],
+			rkpal(3)[[3]]
+			),
+		legend=c(
+			min(ice$Year,na.rm=T),
+			"to",
+			max(ice$Year,na.rm=T)
+			)
+		)
+}
+
 # Ingest data sets
-NHice	<-	load.ice(file="NHfinal_smooth.dat")
-NHice2016	<-	load.ice(file="NHnrt_smooth.dat")
+NHice	<-	load.ice(file="NHsmooth.dat")
 NHicemeans <- load.ice(file="NHsmooth_mean.dat")
 #
 Nyears	<-	length(unique(NHice$Year))
-NHice$color <- rkpal(Nyears)[as.numeric(cut(NHice$Year,breaks=Nyears))]
+NHice$color <- rkpal(length(unique(NHice$Year)))[as.numeric(cut(NHice$Year,breaks=Nyears))]
 #
 png(filename="NHice.png",
 	width=pngsize$width,
 	height=pngsize$height)
 plotice(
 	NHice,
-	NHice2016,
 	NHicemeans,
 	icename="Arctic Sea Ice",
 	Nspan=Nspan,
@@ -278,7 +356,6 @@ png(filename="NHiceAnomaly.png",
 	height=pngsize$height)
 ploticeanomaly(
 	NHice,
-	NHice2016,
 	NHicemeans,
 	icename="Arctic Sea Ice",
 	Nspan=Nspan,
@@ -286,9 +363,19 @@ ploticeanomaly(
 	probs=probs
 	)
 dev.off()
+png(filename="NHiceAnomalyTrend.png",
+	width=pngsize$width,
+	height=pngsize$height)
+plotanomalytrend(
+	NHice,
+	NHicemeans,
+	icename="Arctic Sea Ice",
+	Nspan=Nspan,
+	probs=probs
+	)
+dev.off()
 #
-SHice	<-	load.ice(file="SHfinal_smooth.dat")
-SHice2016	<-	load.ice(file="SHnrt_smooth.dat")
+SHice	<-	load.ice(file="SHsmooth.dat")
 SHicemeans <- load.ice(file="SHsmooth_mean.dat")
 #
 Nyears	<-	length(unique(SHice$Year))
@@ -299,7 +386,6 @@ png(filename="SHice.png",
 	height=pngsize$height)
 plotice(
 	SHice,
-	SHice2016,
 	SHicemeans,
 	icename="Antarctic Sea Ice",
 	Nspan=Nspan,
@@ -312,7 +398,6 @@ png(filename="SHiceAnomaly.png",
 	height=pngsize$height)
 ploticeanomaly(
 	SHice,
-	SHice2016,
 	SHicemeans,
 	icename="Antarctic Sea Ice",
 	Nspan=Nspan,
@@ -320,3 +405,16 @@ ploticeanomaly(
 	probs=probs
 	)
 dev.off()
+#
+png(filename="SHiceAnomalyTrend.png",
+	width=pngsize$width,
+	height=pngsize$height)
+plotanomalytrend(
+	SHice,
+	SHicemeans,
+	icename="Antarctic Sea Ice",
+	Nspan=Nspan,
+	probs=probs
+	)
+dev.off()
+
