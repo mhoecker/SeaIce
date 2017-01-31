@@ -116,13 +116,13 @@ legend("bottom",
 	)
 # Lower Plot of Extent
 plot(
-	icemeans[,c("Jday","Extent")],
+	icemeans[,c("Jday","medianExtent")],
 	pch=16,
 	axes=F,
 	xlab="Day of the year",
 	xlim=c(1,366),
 	ylab=Extentlab,
-	ylim=range(pretty(ice$Extent)),
+	ylim=range(pretty(ice$medianExtent)),
 	col="white"
 	)
 title(sprintf("Smoothed over %i days",2*Nspan+1))
@@ -130,13 +130,13 @@ axis(1,
 	at=xtics$at,
 	label=xtics$label)
 axis(2,
-	at=pretty(range(c(icemeans$Extent1,icemeans$Extent4))))
+	at=pretty(range(c(icemeans$medianExtent1,icemeans$medianExtent4))))
 polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-	c(icemeans$Extent4, rev(icemeans$Extent1)),
+	c(icemeans$medianExtent4, rev(icemeans$medianExtent1)),
 	col = "grey80",
 	border = NA)
 polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-	c(icemeans$Extent3, rev(icemeans$Extent2)),
+	c(icemeans$medianExtent3, rev(icemeans$medianExtent2)),
 	col = "grey60",
 	border = NA)
 for(yr in unique(ice$Year)){
@@ -147,11 +147,11 @@ for(yr in unique(ice$Year)){
 	}
 }
 #median
-lines(icemeans[,c("Jday","Extent1")],col="grey80",lw=2)
-lines(icemeans[,c("Jday","Extent4")],col="grey80",lw=2)
-lines(icemeans[,c("Jday","Extent2")],col="grey60",lw=3)
-lines(icemeans[,c("Jday","Extent3")],col="grey60",lw=3)
-lines(icemeans[,c("Jday","Extent")],col="white",lw=4)
+lines(icemeans[,c("Jday","medianExtent1")],col="grey80",lw=2)
+lines(icemeans[,c("Jday","medianExtent4")],col="grey80",lw=2)
+lines(icemeans[,c("Jday","medianExtent2")],col="grey60",lw=3)
+lines(icemeans[,c("Jday","medianExtent3")],col="grey60",lw=3)
+lines(icemeans[,c("Jday","medianExtent")],col="white",lw=4)
 lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
 lines(ice[ice$Year==max(ice$Year),c("JJJ","medianExtent")],col=ice$color[ice$Year==max(ice$Year)],lw=histlw)
 }
@@ -182,7 +182,7 @@ ploticeanomaly	<-	function(
 		ylim=dExtentlims,
 		col="white"
 		)
-	if(!is.na(Nspan)){title(sprintf("Rate of change calculated over %i days",2*Nspan+1))}
+	if(!is.na(Nspan)){title(sprintf("Rate of change calculated over %i days\nMedian Seasonal Cycle Removed",2*Nspan+1))}
 	axis(1,
 		at=xtics$at,
 		label=xtics$label)
@@ -233,7 +233,7 @@ ploticeanomaly	<-	function(
 			)
 		)
 	# Lower Plot of Extent
-	Extentlims	<-	range(pretty(ice$ExtentA))
+	Extentlims	<-	range(pretty(ice$medianExtentA))
 	plot(
 		x=0,
 		y=0,
@@ -243,25 +243,25 @@ ploticeanomaly	<-	function(
 		ylab=Extentlab,
 		ylim=Extentlims
 		)
-	title(sprintf("Smoothed over %i days",2*Nspan+1))
+	title(sprintf("Smoothed over %i days\nMedian Seasonal Cycle Removed",2*Nspan+1))
 	axis(1,
 		at=xtics$at,
 		label=xtics$label)
 	axis(2,
 		at=pretty(Extentlims))
 	polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-		c(icemeans$Extent4A, rev(icemeans$Extent1A)),
+		c(icemeans$medianExtent4A, rev(icemeans$medianExtent1A)),
 		col = "grey80",
 		border = NA)
 	polygon(c(icemeans$Jday, rev(icemeans$Jday)),
-		c(icemeans$Extent3A, rev(icemeans$Extent2A)),
+		c(icemeans$medianExtent3A, rev(icemeans$medianExtent2A)),
 		col = "grey60",
 		border = NA)
 	for(yr in unique(ice$Year)){
 		if(yr==max(ice$Year)){
-			lines(ice[ice$Year==yr,c("JJJ","ExtentA")],col=ice$color[ice$Year==yr],lw=3*histlw)
+			lines(ice[ice$Year==yr,c("JJJ","medianExtentA")],col=ice$color[ice$Year==yr],lw=3*histlw)
 		}else{
-			lines(ice[ice$Year==yr,c("JJJ","ExtentA")],col=ice$color[ice$Year==yr],lw=histlw)
+			lines(ice[ice$Year==yr,c("JJJ","medianExtentA")],col=ice$color[ice$Year==yr],lw=histlw)
 		}
 	}
 	lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)	
@@ -307,27 +307,36 @@ plotanomalytrend	<-	function(
 		x	<-	ice$Year[thisyr]+(x-.5)/max(c(x,365))
 		xmean	<- yr+(icemeans$Jday-.5)/365
 		xmean	<-	c(xmean,rev(xmean))
-		polygon(x=xmean,y=c(icemeans$Extent1A,rev(icemeans$Extent4A)),col="grey80",border = NA)
-		polygon(x=xmean,y=c(icemeans$Extent2A,rev(icemeans$Extent3A)),col="grey60",border = NA)
-		lines(x=x,y=ice$ExtentA[thisyr],col=ice$color[thisyr],lw=histlw)
+		polygon(x=xmean,y=c(icemeans$medianExtent1A,rev(icemeans$medianExtent4A)),col="grey80",border = NA)
+		polygon(x=xmean,y=c(icemeans$medianExtent2A,rev(icemeans$medianExtent3A)),col="grey60",border = NA)
+		lines(x=x,y=ice$medianExtentA[thisyr],col=ice$color[thisyr],lw=histlw)
 	}
 	legend("bottom",
 		bty="n",
-		ncol=1,
+		ncol=2,
 		border=c(
 			rkpal(3)[[1]],
 			rkpal(3)[[2]],
-			rkpal(3)[[3]]
+			rkpal(3)[[3]],
+			"white",
+			"grey80",
+			"grey60"
 			),
 		fill=c(
 			rkpal(3)[[1]],
 			rkpal(3)[[2]],
-			rkpal(3)[[3]]
+			rkpal(3)[[3]],
+			"white",
+			"grey80",
+			"grey60"
 			),
 		legend=c(
 			min(ice$Year,na.rm=T),
 			"to",
-			max(ice$Year,na.rm=T)
+			max(ice$Year,na.rm=T),
+			"Percentile Bounds",
+			paste(probs[1]*100,"%-",100*probs[4],"%",sep=""),
+			paste(probs[2]*100,"%-",100*probs[3],"%",sep="")
 			)
 		)
 }
