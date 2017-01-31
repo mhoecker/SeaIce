@@ -34,12 +34,6 @@ ingest.ice	<-	function(iceCSVfile,
 	){
 	ice	<-	read.ice(iceCSVfile)
 	#
-	ice_mean	<-	meanice(ice,probs=probs)
-	save.ice(ice_mean,file=paste(outname,"mean.dat",sep=""))
-	#
-	ice	<-	addanomaly(ice,ice_mean)
-	save.ice(ice,file=paste(outname,".dat",sep=""))
-	#
 	ice_smooth	<-	smoothice(ice,Nspan=Nspan)
 	#
 	ice_smooth_mean	<-	meanice(ice_smooth,probs=probs)
@@ -61,12 +55,12 @@ smoothice	<-	function(
 			y=ice$Extent[datarange]
 			)
 		weights	<-	abs(subdata$x)
-		weights	<-	weights/Nspan
-		weights	<-	sqrt(weights)
+		weights	<-	weights/(Nspan+1)
+#		weights	<-	sqrt(weights)
 		weights	<-	1-weights
-		if(Nspan>42){
+		if(Nspan>30){
 			fitmodel <-	lm(
-				formula= y ~ poly(x,2,raw=T),
+				formula= y ~ poly(x,4,raw=T),
 				weights=weights,
 				data=subdata)
 		}else{
@@ -134,6 +128,9 @@ meanice	<-	function(
 	icemeans <-	data.frame(Jday=unique(ice$JJJ))
 	icemeans$Extent	<- NA
 	icemeans <- icemeans[order(icemeans$Jday),]
+	if("medianExtent" %in% names(ice)){
+		icemeans$medianExtent	<-	NA
+	}
 	for( j in 1:length(icemeans$Jday)){
 		isday	<-	ice$JJJ==icemeans$Jday[j]
 		# calculate Extent quantiles
@@ -142,6 +139,14 @@ meanice	<-	function(
 		icemeans$Extent2[j] <- quantile(ice[isday,"Extent"],probs=probs[2],na.rm=T)
 		icemeans$Extent3[j] <- quantile(ice[isday,"Extent"],probs=probs[3],na.rm=T)
 		icemeans$Extent4[j] <- quantile(ice[isday,"Extent"],probs=probs[4],na.rm=T)
+		# if median exists calculate quantiles
+		if("medianExtent" %in% names(ice)){
+			icemeans$medianExtent[j] <- median(ice[isday,"medianExtent"],na.rm=T)
+			icemeans$medianExtent1[j] <- quantile(ice[isday,"medianExtent"],probs=probs[1],na.rm=T)
+			icemeans$medianExtent2[j] <- quantile(ice[isday,"medianExtent"],probs=probs[2],na.rm=T)
+			icemeans$medianExtent3[j] <- quantile(ice[isday,"medianExtent"],probs=probs[3],na.rm=T)
+			icemeans$medianExtent4[j] <- quantile(ice[isday,"medianExtent"],probs=probs[4],na.rm=T)
+		}
 		# calculate dExtent quantiles
 		if("dExtent" %in% names(ice)){
 			icemeans$dExtent[j] <- median(ice[isday,"dExtent"],na.rm=T)
@@ -156,6 +161,13 @@ meanice	<-	function(
 	icemeans$Extent2A	<-	icemeans$Extent2-icemeans$Extent
 	icemeans$Extent3A	<-	icemeans$Extent3-icemeans$Extent
 	icemeans$Extent4A	<-	icemeans$Extent4-icemeans$Extent
+	# if median exists calculate anomalies
+	if("medianExtent" %in% names(ice)){
+		icemeans$medianExtent1A	<-	icemeans$medianExtent1-icemeans$medianExtent
+		icemeans$medianExtent2A	<-	icemeans$medianExtent2-icemeans$medianExtent
+		icemeans$medianExtent3A	<-	icemeans$medianExtent3-icemeans$medianExtent
+		icemeans$medianExtent4A	<-	icemeans$medianExtent4-icemeans$medianExtent
+	}
 	# if derivative exists calculate anomalies
 	if("dExtent" %in% names(ice)){
 		icemeans$dExtent1A	<-	icemeans$dExtent1-icemeans$dExtent
@@ -175,9 +187,15 @@ addanomaly	<-	function(
 	if('dExtent' %in% names(ice)){
 			ice$dExtentA	<-	ice$dExtent
 	}
+	if('medianExtent' %in% names(ice)){
+			ice$medianExtentA	<-	ice$medianExtent
+	}
 	for( j in 1:length(icemeans$Jday)){
 		isday	<-	ice$JJJ==icemeans$Jday[j]
 		ice$ExtentA[isday]	<-	ice$ExtentA[isday]-icemeans$Extent[j]
+		if('medianExtent' %in% names(icemeans)){
+				ice$medianExtentA[isday]	<-	ice$medianExtentA[isday]-icemeans$medianExtent[j]
+		}
 		if('dExtent' %in% names(icemeans)){
 			ice$dExtentA[isday]	<-	ice$dExtentA[isday]-icemeans$dExtent[j]
 		}
