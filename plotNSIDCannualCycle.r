@@ -1,10 +1,9 @@
 # set plot size
 pngsize	<-list(width=1536,height=1024)
 # Set colors and plot tics
-rkpal	<-	colorRampPalette(c(
-	rgb(0.1,0.1,.7),
-	rgb(1,1,.4),
-	rgb(.7,.1,.1))
+require(RColorBrewer)
+rkpal	<-	colorRampPalette(
+	rev(brewer.pal(n=11,name="RdYlBu"))
 	)
 # Dates marking midpoints of months and start and end of year
 myMonth	<- data.frame(date=as.Date(c(
@@ -41,7 +40,7 @@ plotice	<-	function(
 		){
 histpch	<-	1
 histcex	<-	.1
-histlw	<-	1
+histlw	<-	2
 Extentlab	<-	paste(icename,"Extent (10^6 km^2)")
 dExtentlab	<-	paste(icename,"Change","(10^6 km^2 / day)")
 par(mfrow=c(2,1),cex=1.5)
@@ -71,28 +70,25 @@ polygon(c(icemeans$Jday, rev(icemeans$Jday)),
 	col = "grey60",
 	border = NA)
 # Plot historical values
-for(yr in unique(ice$Year)){
-	if(yr==max(ice$Year)){
-		lines(ice[ice$Year==yr,c("JJJ","dExtent")],col=ice$color[ice$Year==yr],lw=3*histlw)
-	}else{
-		lines(ice[ice$Year==yr,c("JJJ","dExtent")],col=ice$color[ice$Year==yr],lw=histlw)
+	for(yr in unique(ice$Year)){
+		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+		lines(ice[ice$Year==yr,c("JJJ","dExtent")],col="black",lw=thelw+1)		
+		lines(ice[ice$Year==yr,c("JJJ","dExtent")],col=ice$color[ice$Year==yr],lw=thelw)		
 	}
-}
 # Plot median
-lines(icemeans[,c("Jday","dExtent1")],col="grey80",lw=2)
-lines(icemeans[,c("Jday","dExtent4")],col="grey80",lw=2)
-lines(icemeans[,c("Jday","dExtent2")],col="grey60",lw=3)
-lines(icemeans[,c("Jday","dExtent3")],col="grey60",lw=3)
 lines(icemeans[,c("Jday","dExtent")],col="white",lw=4)
-lines(ice[ice$Year==max(ice$Year),c("JJJ","dExtent")],col=ice$color[ice$Year==max(ice$Year)],lw=histlw)
+lines(
+	ice[ice$Year==max(ice$Year),c("JJJ","dExtent")],
+	col=ice$color[ice$Year==max(ice$Year)],
+	lw=histlw)
 lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
 legend("bottom",
 	bty="n",
 	ncol=2,
 	border=c(
-		rkpal(3)[[1]],
-		rkpal(3)[[2]],
-		rkpal(3)[[3]],
+		"black",
+		"black",
+		"black",
 		"black",
 		"grey80",
 		"grey60"
@@ -139,21 +135,18 @@ polygon(c(icemeans$Jday, rev(icemeans$Jday)),
 	c(icemeans$medianExtent3, rev(icemeans$medianExtent2)),
 	col = "grey60",
 	border = NA)
-for(yr in unique(ice$Year)){
-	if(yr==max(ice$Year)){
-		lines(ice[ice$Year==yr,c("JJJ","medianExtent")],col=ice$color[ice$Year==yr],lw=3*histlw)
-	}else{
-		lines(ice[ice$Year==yr,c("JJJ","medianExtent")],col=ice$color[ice$Year==yr],lw=histlw)
+	for(yr in unique(ice$Year)){
+		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+		lines(ice[ice$Year==yr,c("JJJ","medianExtent")],col="black",lw=thelw+1)		
+		lines(ice[ice$Year==yr,c("JJJ","medianExtent")],col=ice$color[ice$Year==yr],lw=thelw)		
 	}
-}
 #median
-lines(icemeans[,c("Jday","medianExtent1")],col="grey80",lw=2)
-lines(icemeans[,c("Jday","medianExtent4")],col="grey80",lw=2)
-lines(icemeans[,c("Jday","medianExtent2")],col="grey60",lw=3)
-lines(icemeans[,c("Jday","medianExtent3")],col="grey60",lw=3)
 lines(icemeans[,c("Jday","medianExtent")],col="white",lw=4)
 lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
-lines(ice[ice$Year==max(ice$Year),c("JJJ","medianExtent")],col=ice$color[ice$Year==max(ice$Year)],lw=histlw)
+lines(
+	ice[ice$Year==max(ice$Year),c("JJJ","medianExtent")],
+	col=ice$color[ice$Year==max(ice$Year)],
+	lw=histlw)
 }
 ploticeanomaly	<-	function(
 	ice,
@@ -169,11 +162,11 @@ ploticeanomaly	<-	function(
 	par(mfrow=c(2,1),cex=1.5)
 	histpch	<-	1
 	histcex	<-	.1
-	histlw	<-	1
+	histlw	<-	2
 	#Upper plot of Rate
 	dExtentlims	<-	range(pretty(ice$dExtentA))
 	plot(
-		x=0,
+		x=-366,
 		y=0,
 		axes=F,
 		xlab="Day of the year",
@@ -197,10 +190,10 @@ ploticeanomaly	<-	function(
 		col = "grey60",
 		border = NA)
 	for(yr in unique(ice$Year)){
-		if(yr==max(ice$Year)){
-			lines(ice[ice$Year==yr,c("JJJ","dExtentA")],col=ice$color[ice$Year==yr],lw=3*histlw)
-		}else{
-			lines(ice[ice$Year==yr,c("JJJ","dExtentA")],col=ice$color[ice$Year==yr],lw=histlw)		
+		if(yr>max(ice$Year)-1-ceiling(Nspan/10)){
+			thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+			lines(ice[ice$Year==yr,c("JJJ","dExtentA")],col="black",lw=thelw+1)		
+			lines(ice[ice$Year==yr,c("JJJ","dExtentA")],col=ice$color[ice$Year==yr],lw=thelw)		
 		}
 	}
 	lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)
@@ -208,9 +201,9 @@ ploticeanomaly	<-	function(
 		bty="n",
 		ncol=2,
 		border=c(
-			rkpal(3)[[1]],
-			rkpal(3)[[2]],
-			rkpal(3)[[3]],
+			"black",
+			"black",
+			"black",
 			"white",
 			"grey80",
 			"grey60"
@@ -235,7 +228,7 @@ ploticeanomaly	<-	function(
 	# Lower Plot of Extent
 	Extentlims	<-	range(pretty(ice$medianExtentA))
 	plot(
-		x=0,
+		x=-366,
 		y=0,
 		axes=F,
 		xlab="Day of the year",
@@ -258,11 +251,9 @@ ploticeanomaly	<-	function(
 		col = "grey60",
 		border = NA)
 	for(yr in unique(ice$Year)){
-		if(yr==max(ice$Year)){
-			lines(ice[ice$Year==yr,c("JJJ","medianExtentA")],col=ice$color[ice$Year==yr],lw=3*histlw)
-		}else{
-			lines(ice[ice$Year==yr,c("JJJ","medianExtentA")],col=ice$color[ice$Year==yr],lw=histlw)
-		}
+		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+		lines(ice[ice$Year==yr,c("JJJ","ExtentA")],col="black",lw=thelw+1)		
+		lines(ice[ice$Year==yr,c("JJJ","ExtentA")],col=ice$color[ice$Year==yr],lw=thelw)		
 	}
 	lines(x=icemeans$Jday,y=0*icemeans$Jday,lty=5,col="black",lw=1)	
 }
@@ -284,7 +275,7 @@ plotanomalytrend	<-	function(
 	Extentlims	<-	range(pretty(ice$ExtentA))
 	histpch	<-	16
 	histcex	<-	1
-	histlw	<-	1
+	histlw	<-	3
 	par(cex=1.5)
 	plot(
 		x=0,
@@ -309,15 +300,16 @@ plotanomalytrend	<-	function(
 		xmean	<-	c(xmean,rev(xmean))
 		polygon(x=xmean,y=c(icemeans$medianExtent1A,rev(icemeans$medianExtent4A)),col="grey80",border = NA)
 		polygon(x=xmean,y=c(icemeans$medianExtent2A,rev(icemeans$medianExtent3A)),col="grey60",border = NA)
+		lines(x=x,y=ice$medianExtentA[thisyr],col="black",lw=1+histlw)
 		lines(x=x,y=ice$medianExtentA[thisyr],col=ice$color[thisyr],lw=histlw)
 	}
 	legend("bottom",
 		bty="n",
 		ncol=2,
 		border=c(
-			rkpal(3)[[1]],
-			rkpal(3)[[2]],
-			rkpal(3)[[3]],
+			"black",
+			"black",
+			"black",
 			"white",
 			"grey80",
 			"grey60"
