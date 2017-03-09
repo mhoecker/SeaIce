@@ -40,7 +40,41 @@ ingest.ice	<-	function(iceCSVfile,
 	save.ice(ice_smooth_mean,file=paste(outname,"smooth_mean.dat",sep=""))
 	#
 	ice_smooth	<-	addanomaly(ice_smooth,ice_smooth_mean)
+	ice_smooth	<-	detrend.ice(ice_smooth)
 	save.ice(ice_smooth,file=paste(outname,"smooth.dat",sep=""))
+}
+#
+detrend.ice	<-	function(ice){
+# read in ice with anomaly
+# calculate anomaly trend
+# calculate detrended anomaly
+	if(('ExtentA' %in% names(ice))&!(('ExtentA_detrend' %in% names(ice)))){
+		subdata	<- data.frame(
+				x=as.numeric(ice$date),
+				y=ice$ExtentA
+				)
+			fitmodel <-	lm(
+				formula= y ~ poly(x,1,raw=T),
+				data=subdata)
+		ice$ExtentA_detrend	<- subdata$y-fitmodel$coefficients[1]-fitmodel$coefficients[2]*subdata$x
+	}
+	if(
+		('medianExtentA' %in% names(ice))
+		&!
+		(('ExtentA_detrend' %in% names(ice)))
+		){
+		subdata	<- data.frame(
+				x=as.numeric(ice$date),
+				y=ice$medianExtentA
+				)
+			fitmodel <-	lm(
+				formula= y ~ poly(x,1,raw=T),
+				data=subdata)
+		ice$medianExtentA_detrend	<- subdata$y-fitmodel$coefficients[1]-fitmodel$coefficients[2]*subdata$x
+	}
+	return(ice)
+# calculate detrended percentiles
+# output detrended variables
 }
 #Smooth ice data by fitting a local linear regression
 smoothice	<-	function(
@@ -183,7 +217,7 @@ addanomaly	<-	function(
 	ice,
 	icemeans
 	){
-	ice$ExtentA	<-	ice$medianExtent
+	ice$ExtentA	<-	ice$Extent
 	if('dExtent' %in% names(ice)){
 			ice$dExtentA	<-	ice$dExtent
 	}

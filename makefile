@@ -4,7 +4,7 @@ NSIDCftp	=	ftp://sidads.colorado.edu/
 NHdir		=	DATASETS/NOAA/G02135/north/daily/data/
 SHdir		=	DATASETS/NOAA/G02135/south/daily/data/
 AllIceCSV	=	$(NHiceCSV) $(SHiceCSV)
-Nspan		=	Nspan <- 70
+Nspan		=	Nspan <- 3
 probs		=	probs <- c(.125,.25,.75,.875)
 outputdir	=	/Users/mhoecker/Documents/gnuplot/
 
