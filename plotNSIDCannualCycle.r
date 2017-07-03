@@ -8,63 +8,63 @@ rkpal	<-	colorRampPalette(
 # Dates marking end of weeks in each month end of year
 myMonth	<- data.frame(date=as.Date(c(
 	"2016-01-01",
-	"2016-01-07",
+#	"2016-01-07",
 	"2016-01-14",
-	"2016-01-21",
+#	"2016-01-21",
 	"2016-01-28",
-	"2016-01-31",
-	"2016-02-07",
+#	"2016-01-31",
+#	"2016-02-07",
 	"2016-02-14",
-	"2016-02-21",
+#	"2016-02-21",
 	"2016-02-28",
-	"2016-03-07",
+#	"2016-03-07",
 	"2016-03-14",
-	"2016-03-21",
+#	"2016-03-21",
 	"2016-03-28",
-	"2016-03-31",
-	"2016-04-07",
+#	"2016-03-31",
+#	"2016-04-07",
 	"2016-04-14",
-	"2016-04-21",
+#	"2016-04-21",
 	"2016-04-28",
-	"2016-04-30",
-	"2016-05-07",
+#	"2016-04-30",
+#	"2016-05-07",
 	"2016-05-14",
-	"2016-05-21",
+#	"2016-05-21",
 	"2016-05-28",
-	"2016-05-31",
-	"2016-06-07",
+#	"2016-05-31",
+#	"2016-06-07",
 	"2016-06-14",
-	"2016-06-21",
+#	"2016-06-21",
 	"2016-06-28",
-	"2016-06-30",
-	"2016-07-07",
+#	"2016-06-30",
+#	"2016-07-07",
 	"2016-07-14",
-	"2016-07-21",
+#	"2016-07-21",
 	"2016-07-28",
-	"2016-07-31",
-	"2016-08-07",
+#	"2016-07-31",
+#	"2016-08-07",
 	"2016-08-14",
-	"2016-08-21",
+#	"2016-08-21",
 	"2016-08-28",
-	"2016-08-31",
-	"2016-09-07",
+#	"2016-08-31",
+#	"2016-09-07",
 	"2016-09-14",
-	"2016-09-21",
+#	"2016-09-21",
 	"2016-09-28",
-	"2016-09-30",
-	"2016-10-07",
+#	"2016-09-30",
+#	"2016-10-07",
 	"2016-10-14",
-	"2016-10-21",
+#	"2016-10-21",
 	"2016-10-28",
-	"2016-10-31",
-	"2016-11-07",
+#	"2016-10-31",
+#	"2016-11-07",
 	"2016-11-14",
-	"2016-11-21",
+#	"2016-11-21",
 	"2016-11-28",
-	"2016-11-30",
-	"2016-12-07",
+#	"2016-11-30",
+#	"2016-12-07",
 	"2016-12-14",
-	"2016-12-21",
+#	"2016-12-21",
 	"2016-12-28",
 	"2016-12-31"
 #
@@ -102,10 +102,10 @@ plotice	<-	function(
 		){
 histpch	<-	1
 histcex	<-	.1
-histlw	<-	2
+histlw	<-	1
 Extentlab	<-	paste(icename,"Extent (10^6 km^2)")
 dExtentlab	<-	paste(icename,"Change","(10^6 km^2 / day)")
-xrange	<-	as.numeric(strftime(Sys.Date(),format="%j"))+c(-28,28)
+xrange	<-	as.numeric(strftime(Sys.Date(),format="%j"))+c(-178,178)
 par(mfrow=c(2,1),cex=1.5)
 #Upper plot of Rate
 plot(
@@ -129,13 +129,14 @@ axis(2,
 		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
 		x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,ice[ice$Year==yr,"JJJ"],ice[ice$Year==yr+1,"JJJ"]+366)
 		y	<-	c(ice[ice$Year==yr-1,"dExtent"],ice[ice$Year==yr,"dExtent"],ice[ice$Year==yr+1,"dExtent"])
-		lines(x=x,y=y,col="black",lw=thelw+1)		
+		#lines(x=x,y=y,col="black",lw=thelw+1)		
 		lines(x=x,y=y,col=ice$color[ice$Year==yr],lw=thelw)		
 	}
 # Plot median
 x	<-	c(icemeans[,"Jday"]-366,icemeans[,"Jday"],icemeans[,"Jday"]+366)
 y	<-	c(icemeans[,"dExtent"],icemeans[,"dExtent"],icemeans[,"dExtent"])
-lines(x=x,y=y,col="white",lw=4)
+lines(x=x,y=y,col="black",lw=5)
+lines(x=x,y=y,col="white",lw=3)
 lines(x=xrange,y=0*xrange,lty=5,col="black",lw=2)
 legend("bottom",
 	bty="n",
@@ -180,13 +181,14 @@ axis(2,
 		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
 		x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,ice[ice$Year==yr,"JJJ"],ice[ice$Year==yr+1,"JJJ"]+366)
 		y	<-	c(ice[ice$Year==yr-1,"medianExtent"],ice[ice$Year==yr,"medianExtent"],ice[ice$Year==yr+1,"medianExtent"])
-		lines(x=x,y=y,col="black",lw=thelw+1)		
+		#lines(x=x,y=y,col="black",lw=thelw+1)		
 		lines(x=x,y=y,col=ice$color[ice$Year==yr],lw=thelw)		
 	}
 #median
 x	<-	c(icemeans[,"Jday"]-366,icemeans[,"Jday"],icemeans[,"Jday"]+366)
 y	<-	c(icemeans[,"medianExtent"],icemeans[,"medianExtent"],icemeans[,"medianExtent"])
-lines(x=x,y=y,col="white",lw=4)
+lines(x=x,y=y,col="black",lw=5)
+lines(x=x,y=y,col="white",lw=3)
 lines(x=xrange,y=0*xrange,lty=5,col="black",lw=2)
 }
 ploticeanomaly	<-	function(
@@ -203,9 +205,9 @@ ploticeanomaly	<-	function(
 	par(mfrow=c(2,1),cex=1.5)
 	histpch	<-	1
 	histcex	<-	.1
-	histlw	<-	2
+	histlw	<-	1
 	#Upper plot of Rate
-	dExtentlims	<-	range(pretty(ice$dExtentA))
+	dExtentlims	<-	range(pretty(1.3*c(icemeans$dExtent1A,icemeans$dExtent4A)))
 	plot(
 		x=-366,
 		y=0,
@@ -252,7 +254,7 @@ ploticeanomaly	<-	function(
 			x	<-	ice[ice$Year==yr,"JJJ"]
 			x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,x,ice[ice$Year==yr+1,"JJJ"]+366)
 			y	<-	c(ice[ice$Year==yr-1,"dExtentA"],ice[ice$Year==yr,"dExtentA"],ice[ice$Year==yr+1,"dExtentA"])
-			lines(x=x,y=y,col="black",lw=thelw+1)		
+			#lines(x=x,y=y,col="black",lw=thelw+1)		
 			lines(x=x,y=y,col=ice$color[ice$Year==yr],lw=thelw)		
 		}
 	}
@@ -286,7 +288,7 @@ ploticeanomaly	<-	function(
 			)
 		)
 	# Lower Plot of Extent
-	Extentlims	<-	range(pretty(ice$medianExtentA))
+	Extentlims	<-	range(pretty(1.3*c(icemeans$medianExtent1A,icemeans$medianExtent4A)))
 	plot(
 		x=-366,
 		y=0,
@@ -329,7 +331,7 @@ ploticeanomaly	<-	function(
 		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
 		x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,ice[ice$Year==yr,"JJJ"],ice[ice$Year==yr+1,"JJJ"]+366)
 		y	<-	c(ice[ice$Year==yr-1,"ExtentA"],ice[ice$Year==yr,"ExtentA"],ice[ice$Year==yr+1,"ExtentA"])
-		lines(x=x,y=y,col="black",lw=thelw+1)
+		#lines(x=x,y=y,col="black",lw=thelw+1)
 		lines(x=x,y=y,col=ice$color[ice$Year==yr],lw=thelw)		
 	}
 	lines(x=c(-366,2*366),y=c(0,0),lty=5,col="black",lw=2)	
@@ -352,7 +354,7 @@ plotanomalytrend	<-	function(
 	Extentlims	<-	range(pretty(ice$ExtentA))
 	histpch	<-	16
 	histcex	<-	1
-	histlw	<-	3
+	histlw	<-	4
 	par(cex=1.5)
 	plot(
 		x=0,
@@ -377,7 +379,7 @@ plotanomalytrend	<-	function(
 		xmean	<-	c(xmean,rev(xmean))
 		polygon(x=xmean,y=c(icemeans$medianExtent1A,rev(icemeans$medianExtent4A)),col="grey80",border = NA)
 		polygon(x=xmean,y=c(icemeans$medianExtent2A,rev(icemeans$medianExtent3A)),col="grey60",border = NA)
-		lines(x=x,y=ice$medianExtentA[thisyr],col="black",lw=1+histlw)
+		lines(x=x,y=ice$medianExtentA[thisyr],col="black",lw=2+histlw)
 		lines(x=x,y=ice$medianExtentA[thisyr],col=ice$color[thisyr],lw=histlw)
 	}
 	legend("bottom",

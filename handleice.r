@@ -92,7 +92,7 @@ smoothice	<-	function(
 		weights	<-	weights/(Nspan+1)
 #		weights	<-	sqrt(weights)
 		weights	<-	1-weights
-		if(Nspan>30){
+		if(Nspan>60){
 			fitmodel <-	lm(
 				formula= y ~ poly(x,4,raw=T),
 				weights=weights,
