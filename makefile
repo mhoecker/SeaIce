@@ -1,5 +1,5 @@
-NHiceCSV	=	N_seaice_extent_daily_v2.1.csv
-SHiceCSV	=	S_seaice_extent_daily_v2.1.csv
+NHiceCSV	=	N_seaice_extent_daily_v3.0.csv
+SHiceCSV	=	S_seaice_extent_daily_v3.0.csv
 NSIDCftp	=	ftp://sidads.colorado.edu/
 NHdir		=	DATASETS/NOAA/G02135/north/daily/data/
 SHdir		=	DATASETS/NOAA/G02135/south/daily/data/
