@@ -1,12 +1,12 @@
-NHiceCSV	=	N_seaice_extent_daily_v2.1.csv
-SHiceCSV	=	S_seaice_extent_daily_v2.1.csv
+NHiceCSV	=	N_seaice_extent_daily_v3.0.csv
+SHiceCSV	=	S_seaice_extent_daily_v3.0.csv
 NSIDCftp	=	ftp://sidads.colorado.edu/
 NHdir		=	DATASETS/NOAA/G02135/north/daily/data/
 SHdir		=	DATASETS/NOAA/G02135/south/daily/data/
 AllIceCSV	=	$(NHiceCSV) $(SHiceCSV)
 Nspan		=	Nspan <- 3
 probs		=	probs <- c(.125,.25,.75,.875)
-outputdir	=	/Users/mhoecker/Documents/gnuplot/
+#outputdir	=	/Users/mhoecker/Documents/gnuplot/
 
 # Download ice files
 
@@ -20,18 +20,18 @@ NHsmooth.dat	:	$(NHiceCSV) handleice.r Makefile
 -e "source('handleice.r')" \
 -e "$(Nspan)" \
 -e "$(probs)" \
--e 'ingest.ice("$(outputdir)$(NHiceCSV)","$(outputdir)NH",Nspan=Nspan,probs=probs)'
+-e 'ingest.ice("$(NHiceCSV)","NH",Nspan=Nspan,probs=probs)'
 
 SHsmooth.dat	:	$(SHiceCSV) handleice.r Makefile
 	Rscript \
 -e "source('handleice.r')" \
 -e "$(Nspan)" \
 -e "$(probs)" \
--e 'ingest.ice("$(outputdir)$(SHiceCSV)","SH",Nspan=Nspan,probs=probs)'
+-e 'ingest.ice("$(SHiceCSV)","SH",Nspan=Nspan,probs=probs)'
 
 yearplot	:	SHsmooth.dat NHsmooth.dat plotNSIDCannualCycle.r Makefile
 	Rscript \
--e "source('$(outputdir)handleice.r')" \
+-e "source('handleice.r')" \
 -e "$(Nspan)" \
 -e "$(probs)" \
--e "source('$(outputdir)plotNSIDCannualCycle.r')"
+-e "source('plotNSIDCannualCycle.r')"

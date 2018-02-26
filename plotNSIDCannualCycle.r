@@ -126,7 +126,7 @@ axis(2,
 	at=pretty(range(c(icemeans$dExtent1,icemeans$dExtent4))))
 # Plot historical values
 	for(yr in unique(ice$Year)){
-		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+		thelw	<-	histlw
 		x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,ice[ice$Year==yr,"JJJ"],ice[ice$Year==yr+1,"JJJ"]+366)
 		y	<-	c(ice[ice$Year==yr-1,"dExtent"],ice[ice$Year==yr,"dExtent"],ice[ice$Year==yr+1,"dExtent"])
 		#lines(x=x,y=y,col="black",lw=thelw+1)		
@@ -178,7 +178,7 @@ axis(1,
 axis(2,
 	at=pretty(range(c(icemeans$medianExtent1,icemeans$medianExtent4))))
 	for(yr in unique(ice$Year)){
-		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+		thelw	<-	histlw
 		x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,ice[ice$Year==yr,"JJJ"],ice[ice$Year==yr+1,"JJJ"]+366)
 		y	<-	c(ice[ice$Year==yr-1,"medianExtent"],ice[ice$Year==yr,"medianExtent"],ice[ice$Year==yr+1,"medianExtent"])
 		#lines(x=x,y=y,col="black",lw=thelw+1)		
@@ -250,7 +250,7 @@ ploticeanomaly	<-	function(
 		border = NA)
 	for(yr in unique(ice$Year)){
 		if(yr>max(ice$Year)-1-ceiling(Nspan/10)){
-			thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+			thelw	<-	histlw
 			x	<-	ice[ice$Year==yr,"JJJ"]
 			x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,x,ice[ice$Year==yr+1,"JJJ"]+366)
 			y	<-	c(ice[ice$Year==yr-1,"dExtentA"],ice[ice$Year==yr,"dExtentA"],ice[ice$Year==yr+1,"dExtentA"])
@@ -328,7 +328,7 @@ ploticeanomaly	<-	function(
 		col = "grey60",
 		border = NA)
 	for(yr in unique(ice$Year)){
-		thelw	<-	max(c(histlw,histlw+(yr+ceiling(Nspan/10)-max(ice$Year))))
+		thelw	<-	histlw
 		x	<-	c(ice[ice$Year==yr-1,"JJJ"]-366,ice[ice$Year==yr,"JJJ"],ice[ice$Year==yr+1,"JJJ"]+366)
 		y	<-	c(ice[ice$Year==yr-1,"ExtentA"],ice[ice$Year==yr,"ExtentA"],ice[ice$Year==yr+1,"ExtentA"])
 		#lines(x=x,y=y,col="black",lw=thelw+1)
