@@ -1,5 +1,5 @@
 # set plot size
-pngsize	<-list(width=1536,height=1024)
+pngsize	<-list(width=3072,height=2048)
 # Set colors and plot tics
 require(RColorBrewer)
 rkpal	<-	colorRampPalette(

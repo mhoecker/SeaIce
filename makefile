@@ -4,14 +4,14 @@ NSIDCftp	=	ftp://sidads.colorado.edu/
 NHdir		=	DATASETS/NOAA/G02135/north/daily/data/
 SHdir		=	DATASETS/NOAA/G02135/south/daily/data/
 AllIceCSV	=	$(NHiceCSV) $(SHiceCSV)
-Nspan		=	Nspan <- 3
+Nspan		=	Nspan <- 15
 probs		=	probs <- c(.125,.25,.75,.875)
 #outputdir	=	/Users/mhoecker/Documents/gnuplot/
 
 # Download ice files
 
 getice	:
-	wget -P $(outputdir) -N \
+	wget -N \
 	$(foreach NHiceCSVfile,$(NHiceCSV),$(NSIDCftp)$(NHdir)$(NHiceCSVfile)) \
 	$(foreach SHiceCSVfile,$(SHiceCSV),$(NSIDCftp)$(SHdir)$(SHiceCSVfile))
 
